@@ -1,38 +1,14 @@
-# FinSight
+# FinSight — Financial Document Analyzer
 
-> RAG-powered financial document analyzer — upload a PDF, ask questions in plain English, get cited answers grounded in your document.
+> Upload a financial PDF. Ask questions in plain English. Get answers with page citations — no hallucinations, no guessing.
 
 ---
 
-## Architecture
+## What it does
 
-FinSight implements a full Retrieval-Augmented Generation (RAG) pipeline:
-
-```
-PDF Upload
-   │
-   ▼
-pdfplumber Parser       — extracts raw text, page-by-page
-   │
-   ▼
-Sliding Window Chunker  — splits text into 500-word chunks with 50-word overlap
-   │
-   ▼
-sentence-transformers   — encodes each chunk into a 384-dim embedding vector
-(all-MiniLM-L6-v2)
-   │
-   ▼
-ChromaDB Vector Store   — persists embeddings, indexed by document collection
-   │
-   ▼
-Semantic Retrieval      — embeds the user's question, fetches top-5 nearest chunks
-   │
-   ▼
-Claude Haiku            — synthesizes an answer strictly from retrieved context
-   │
-   ▼
-Cited Answer            — response includes page numbers of every source used
-```
+- Upload any financial PDF (annual reports, balance sheets, earnings calls) and ask questions about it in plain English
+- Answers are pulled directly from your document, not from the model's general knowledge — every response cites the exact pages it used
+- The whole pipeline runs end-to-end: parsing, indexing, retrieval, and generation — no third-party search or external data sources
 
 ---
 
@@ -40,93 +16,71 @@ Cited Answer            — response includes page numbers of every source used
 
 | Layer | Technology |
 |---|---|
-| PDF Parsing | [pdfplumber](https://github.com/jsvine/pdfplumber) |
-| Embeddings | [sentence-transformers](https://www.sbert.net/) · `all-MiniLM-L6-v2` |
-| Vector Store | [ChromaDB](https://www.trychroma.com/) |
-| Backend API | [Flask](https://flask.palletsprojects.com/) |
-| LLM | [Anthropic Claude Haiku](https://www.anthropic.com/) (`claude-haiku-4-5`) |
-| Frontend | [Next.js 15](https://nextjs.org/) · [Tailwind CSS](https://tailwindcss.com/) |
-| Backend Hosting | [Render](https://render.com/) |
-| Frontend Hosting | [Vercel](https://vercel.com/) |
+| PDF Parsing | pdfplumber |
+| Embeddings | sentence-transformers · `all-MiniLM-L6-v2` |
+| Vector Store | ChromaDB |
+| Backend | Flask |
+| LLM | Claude Haiku (`claude-haiku-4-5`) |
+| Frontend | Next.js 15 · Tailwind CSS |
 
 ---
 
-## How RAG Works
+## How RAG works
 
-- **Index** — your PDF is parsed and split into overlapping text chunks, then each chunk is converted into a numerical embedding vector that captures its meaning.
-- **Store** — those vectors are saved in ChromaDB, a local vector database, so they can be searched instantly by semantic similarity rather than keyword matching.
-- **Retrieve** — when you ask a question, it is embedded the same way, and the five most semantically similar chunks are fetched from the database.
-- **Generate** — Claude Haiku receives only those retrieved chunks as context and writes an answer grounded strictly in your document, then cites the page numbers it drew from.
+RAG stands for Retrieval-Augmented Generation. Here's what actually happens when you upload a PDF and ask a question:
+
+1. **Parse** — the PDF is read page by page and converted to plain text using pdfplumber
+2. **Chunk** — that text is split into overlapping 500-word segments so no sentence gets cut off at a boundary
+3. **Embed** — each chunk is run through a small neural network that converts it into a list of numbers representing its meaning (a vector)
+4. **Retrieve** — when you ask a question, it's converted to a vector the same way, then the 5 chunks whose vectors are closest to your question are pulled from the database
+5. **Generate** — Claude Haiku reads only those 5 chunks and writes an answer from them, then tells you exactly which pages it drew from
+
+The model never guesses. If the answer isn't in the document, it says so.
 
 ---
 
-## Running Locally
+## Architecture
 
-### Prerequisites
+```
+PDF → Parser → Chunker → Embedder → ChromaDB → Query → Claude → Answer with citations
+```
 
-- Python 3.10+
-- Node.js 18+
-- An Anthropic API key
+---
+
+## How to run locally
+
+You'll need Python 3.10+, Node.js 18+, and an Anthropic API key.
 
 ### Backend
 
 ```bash
 cd backend
-
-# Create and activate a virtual environment
 python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Configure environment
 cp .env.example .env
 # Add your ANTHROPIC_API_KEY to .env
-
-# Start the Flask server (http://localhost:5000)
 python app.py
+# Running at http://localhost:5000
 ```
 
 ### Frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Configure environment
 cp .env.example .env.local
 # Set NEXT_PUBLIC_API_URL=http://localhost:5000
-
-# Start the dev server (http://localhost:3000)
 npm run dev
+# Running at http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000), upload a financial PDF, and start asking questions.
+Open [http://localhost:3000](http://localhost:3000), upload a PDF, and start asking.
 
 ---
 
-## API Reference
+## Built by
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/upload` | `POST` | Upload a PDF; returns `collection_id` and chunk count |
-| `/ask` | `POST` | Ask a question against an indexed document |
+Amith Choudhary — 3rd semester CSBS student, JSS Science and Technology University, Mysuru.
 
-**Ask request body:**
-```json
-{
-  "collection_id": "abc12345",
-  "question": "What was the net revenue in Q3?"
-}
-```
-
-**Ask response:**
-```json
-{
-  "answer": "Net revenue in Q3 was $4.2 billion...",
-  "pages_cited": [12, 13]
-}
-```
+Built as a portfolio project to demonstrate end-to-end AI/ML engineering: document processing, vector search, and LLM integration in a production-ready full-stack application.
