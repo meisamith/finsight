@@ -81,6 +81,6 @@ Open [http://localhost:3000](http://localhost:3000), upload a PDF, and start ask
 
 ## Built by
 
-Amith Choudhary — 3rd semester CSBS student, JSS Science and Technology University, Mysuru.
+Amith Choudhary — 4th semester CSBS student, JSS Science and Technology University, Mysuru.
 
 Built as a portfolio project to demonstrate end-to-end AI/ML engineering: document processing, vector search, and LLM integration in a production-ready full-stack application.
