@@ -10,6 +10,7 @@ export default function UploadPage() {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
+  const [filename, setFilename] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleFile = useCallback(async (file: File) => {
@@ -19,6 +20,7 @@ export default function UploadPage() {
     }
     setError(null);
     setUploading(true);
+    setFilename(file.name);
     try {
       const data = await uploadDocument(file);
       localStorage.setItem("finsight_collection_id", data.collection_id);
@@ -47,143 +49,155 @@ export default function UploadPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-xl">
-        {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-2 h-2 bg-amber-500 rounded-full" />
-            <span className="text-xs tracking-[0.2em] uppercase text-zinc-500 font-[family-name:var(--font-mono)]">
-              FinSight
-            </span>
-          </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-white">
-            Financial Document Analyzer
-          </h1>
-          <p className="mt-2 text-sm text-zinc-500">
-            Upload a PDF to begin RAG-powered analysis.
-          </p>
+    <main className="min-h-screen bg-[#0a0a0a] flex flex-col">
+      <header className="px-8 pt-7 pb-6">
+        <div className="flex items-center gap-2">
+          <span className="w-[7px] h-[7px] rounded-full bg-amber-500 shrink-0" />
+          <span className="text-[13px] font-semibold tracking-tight text-white font-mono">
+            FinSight
+          </span>
         </div>
+      </header>
 
-        {/* Upload zone */}
-        {!result && (
-          <div
-            onClick={() => !uploading && inputRef.current?.click()}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={onDrop}
-            className={`relative border border-dashed rounded-sm cursor-pointer transition-colors duration-150 p-12 flex flex-col items-center justify-center gap-4 select-none
-              ${dragging
-                ? "border-amber-500 bg-amber-500/5"
-                : "border-zinc-800 hover:border-zinc-600 bg-zinc-950"
-              }
-              ${uploading ? "pointer-events-none opacity-60" : ""}
-            `}
-          >
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={onInputChange}
-            />
+      <div className="flex-1 flex items-center justify-center px-6 pb-16">
+        <div className="w-full max-w-[500px]">
+          {!result ? (
+            <>
+              <div className="mb-10">
+                <h1 className="text-[2.1rem] font-semibold tracking-[-0.02em] text-white leading-[1.2] mb-4">
+                  Ask anything about your<br />financial documents.
+                </h1>
+                <p className="text-[15px] text-zinc-500 leading-relaxed">
+                  Upload a PDF. Get cited answers in seconds.
+                </p>
+              </div>
 
-            {uploading ? (
-              <>
-                <div className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm text-zinc-400 font-[family-name:var(--font-mono)]">
-                  Indexing document…
-                </span>
-              </>
-            ) : (
-              <>
-                <svg
-                  className={`w-8 h-8 ${dragging ? "text-amber-500" : "text-zinc-600"}`}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                  />
-                </svg>
-                <div className="text-center">
-                  <p className="text-sm text-zinc-300">
-                    Drop a PDF here, or{" "}
-                    <span className="text-amber-500 underline underline-offset-2">
-                      browse
+              <div
+                onClick={() => !uploading && inputRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={onDrop}
+                className={[
+                  "border border-dashed cursor-pointer select-none",
+                  "px-10 py-16 flex flex-col items-center justify-center gap-4",
+                  "transition-all duration-200",
+                  dragging
+                    ? "border-amber-500 bg-amber-500/[0.04]"
+                    : "border-amber-500/30 hover:border-amber-500/70 hover:bg-amber-500/[0.02]",
+                  uploading ? "pointer-events-none opacity-50" : "",
+                ].join(" ")}
+              >
+                <input
+                  ref={inputRef}
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={onInputChange}
+                />
+
+                {uploading ? (
+                  <>
+                    <div className="w-5 h-5 border-[1.5px] border-amber-500 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-sm text-zinc-500 font-mono">
+                      Indexing document…
                     </span>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className={`w-7 h-7 transition-colors duration-200 ${dragging ? "text-amber-500" : "text-zinc-600"}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" />
+                      <polyline points="16 6 12 2 8 6" />
+                      <line x1="12" y1="2" x2="12" y2="15" />
+                    </svg>
+                    <div className="text-center">
+                      <p className="text-[14px] text-zinc-300">
+                        Drop PDF here, or{" "}
+                        <span className="text-amber-500">browse files</span>
+                      </p>
+                      <p className="mt-1.5 text-xs text-zinc-600 font-mono">
+                        .pdf only
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {error && (
+                <p className="mt-3 text-xs text-red-400 font-mono">{error}</p>
+              )}
+            </>
+          ) : (
+            <div className="border border-zinc-800 bg-zinc-950">
+              <div className="px-7 py-5 border-b border-zinc-800 flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                <span className="text-xs text-amber-500 font-mono tracking-widest uppercase">
+                  Document indexed
+                </span>
+              </div>
+
+              <div className="px-7 py-6 space-y-5">
+                <div>
+                  <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-[0.15em] mb-1.5">
+                    Filename
                   </p>
-                  <p className="mt-1 text-xs text-zinc-600 font-[family-name:var(--font-mono)]">
-                    .pdf only
+                  <p className="text-sm text-zinc-200 font-mono break-all leading-relaxed">
+                    {filename}
                   </p>
                 </div>
-              </>
-            )}
-          </div>
-        )}
 
-        {/* Error */}
-        {error && (
-          <p className="mt-3 text-xs text-red-400 font-[family-name:var(--font-mono)]">
-            {error}
-          </p>
-        )}
+                <div className="flex gap-8">
+                  <div>
+                    <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-[0.15em] mb-1.5">
+                      Chunks indexed
+                    </p>
+                    <p className="text-3xl font-semibold font-mono text-amber-500">
+                      {result.chunks_indexed}
+                    </p>
+                  </div>
+                </div>
 
-        {/* Success state */}
-        {result && (
-          <div className="border border-zinc-800 rounded-sm bg-zinc-950 p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-              <span className="text-xs text-amber-500 tracking-widest uppercase font-[family-name:var(--font-mono)]">
-                Document indexed
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-zinc-600 uppercase tracking-wider font-[family-name:var(--font-mono)] mb-1">
-                  Collection ID
-                </p>
-                <p className="text-sm font-[family-name:var(--font-mono)] text-zinc-200 break-all">
-                  {result.collection_id}
-                </p>
+                <div>
+                  <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-[0.15em] mb-1.5">
+                    Collection ID
+                  </p>
+                  <p className="text-xs text-zinc-500 font-mono break-all leading-relaxed">
+                    {result.collection_id}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-zinc-600 uppercase tracking-wider font-[family-name:var(--font-mono)] mb-1">
-                  Chunks indexed
-                </p>
-                <p className="text-2xl font-[family-name:var(--font-mono)] text-amber-500 font-semibold">
-                  {result.chunks_indexed}
-                </p>
+
+              <div className="px-7 py-5 border-t border-zinc-800 flex gap-3">
+                <button
+                  onClick={() => router.push("/chat")}
+                  className="flex-1 h-10 bg-amber-500 hover:bg-amber-400 text-black text-sm font-semibold transition-colors duration-150 cursor-pointer"
+                >
+                  Start Analysis →
+                </button>
+                <button
+                  onClick={() => {
+                    setResult(null);
+                    setError(null);
+                    setFilename("");
+                  }}
+                  className="h-10 px-5 border border-zinc-800 hover:border-zinc-600 text-zinc-500 hover:text-zinc-300 text-sm transition-colors duration-150 cursor-pointer"
+                >
+                  Upload another
+                </button>
               </div>
             </div>
-
-            <div className="mt-6 flex gap-3">
-              <button
-                onClick={() => router.push("/chat")}
-                className="flex-1 h-10 bg-amber-500 hover:bg-amber-400 text-black text-sm font-semibold rounded-sm transition-colors"
-              >
-                Start Analysis →
-              </button>
-              <button
-                onClick={() => {
-                  setResult(null);
-                  setError(null);
-                }}
-                className="h-10 px-4 border border-zinc-800 hover:border-zinc-600 text-zinc-400 text-sm rounded-sm transition-colors"
-              >
-                Upload another
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </main>
   );

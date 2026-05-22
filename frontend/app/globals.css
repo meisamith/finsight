@@ -8,11 +8,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --font-family-sans: var(--font-sans, system-ui, sans-serif);
+  --font-family-mono: var(--font-mono, ui-monospace, monospace);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-family-sans);
 }
 
 * {
@@ -28,6 +31,84 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #2a2a2a;
   border-radius: 2px;
+}
+
+/* Subtle dot grid for dark backgrounds */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, #1e1e1e 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Markdown rendering inside AI answer bubbles */
+.md > * + * {
+  margin-top: 0.55rem;
+}
+.md p {
+  line-height: 1.65;
+  color: #d4d4d8;
+}
+.md strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+.md em {
+  color: #a1a1aa;
+  font-style: italic;
+}
+.md ul {
+  padding-left: 1.2rem;
+  list-style-type: disc;
+  color: #d4d4d8;
+}
+.md ol {
+  padding-left: 1.2rem;
+  list-style-type: decimal;
+  color: #d4d4d8;
+}
+.md li + li {
+  margin-top: 0.3rem;
+}
+.md h1,
+.md h2,
+.md h3 {
+  color: #ffffff;
+  font-weight: 600;
+  margin-top: 0.9rem;
+}
+.md h1 { font-size: 1.05rem; }
+.md h2 { font-size: 0.975rem; }
+.md h3 { font-size: 0.9rem; }
+.md code {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  background: rgba(245, 158, 11, 0.08);
+  color: #fbbf24;
+  padding: 0.1em 0.35em;
+  border: 1px solid rgba(245, 158, 11, 0.15);
+}
+.md pre {
+  background: #111111;
+  border: 1px solid #1f1f1f;
+  padding: 0.8rem 1rem;
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
+.md pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #d4d4d8;
+  font-size: 0.8125rem;
+}
+.md blockquote {
+  border-left: 2px solid #3f3f46;
+  padding-left: 0.85rem;
+  color: #71717a;
+  font-style: italic;
+}
+.md hr {
+  border: none;
+  border-top: 1px solid #1f1f1f;
 }
