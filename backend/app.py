@@ -9,7 +9,7 @@ from rag.retriever import answer_question
 
 load_dotenv()
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])
+CORS(app, origins=["*"])
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
