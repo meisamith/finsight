@@ -1,13 +1,13 @@
 import anthropic
 import os
-from .embedder import model
+from .embedder import embed_query
 from .vectorstore import query_collection
 
 claude = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 def answer_question(doc_id: str, question: str) -> dict:
     # 1. Embed the question
-    query_embedding = model.encode([question])[0].tolist()
+    query_embedding = embed_query(question)
 
     # 2. Retrieve top-5 relevant chunks
     results = query_collection(doc_id, query_embedding, n_results=5)
