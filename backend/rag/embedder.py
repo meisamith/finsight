@@ -3,11 +3,15 @@ import os
 
 _client = voyageai.Client(api_key=os.getenv("VOYAGE_API_KEY"))
 
-def embed_chunks(chunks: list[dict]) -> list[dict]:
+def embed_chunks(chunks: list[dict], batch_size: int = 8) -> list[dict]:
     texts = [c["text"] for c in chunks]
-    result = _client.embed(texts, model="voyage-3")
+    embeddings = []
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i + batch_size]
+        result = _client.embed(batch, model="voyage-3")
+        embeddings.extend(result.embeddings)
     for i, chunk in enumerate(chunks):
-        chunk["embedding"] = result.embeddings[i]
+        chunk["embedding"] = embeddings[i]
     return chunks
 
 def embed_query(text: str) -> list[float]:

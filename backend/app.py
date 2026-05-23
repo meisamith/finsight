@@ -9,7 +9,12 @@ from rag.retriever import answer_question
 
 load_dotenv()
 app = Flask(__name__)
-CORS(app, origins=["*"])
+CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=False)
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
