@@ -22,17 +22,6 @@ export async function uploadDocument(file: File): Promise<UploadResult> {
   return res.json();
 }
 
-export async function checkHealth(): Promise<{ status: string; cors: string }> {
-  let res: Response;
-  try {
-    res = await fetch(`${BASE_URL}/health`);
-  } catch {
-    throw new Error(`Cannot reach backend at ${BASE_URL}. Is the server running?`);
-  }
-  if (!res.ok) throw new Error(`Health check failed: ${res.statusText}`);
-  return res.json();
-}
-
 export async function askQuestion(
   collection_id: string,
   question: string
