@@ -7,7 +7,7 @@
 ![Claude API](https://img.shields.io/badge/Claude-Haiku_4.5-blueviolet?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-FinSight is a retrieval-augmented generation (RAG) system for financial document question-answering. Upload an annual report, balance sheet, or earnings call transcript, ask questions in plain English, and receive answers grounded exclusively in the uploaded document — each response cites the exact pages it drew from. It is built for engineers and analysts who need auditable, document-bound answers rather than a language model's general financial knowledge. Live demo: [placeholder] · Source: [this repository].
+FinSight is a retrieval-augmented generation (RAG) system for financial document question-answering. Upload an annual report, balance sheet, or earnings call transcript, ask questions in plain English, and receive answers grounded exclusively in the uploaded document — each response cites the exact pages it drew from. It is built for engineers and analysts who need auditable, document-bound answers rather than a language model's general financial knowledge.  
 
 **Amith Choudhary · CSBS, JSS Science and Technology University, Mysuru**
 
